@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit</title>
+</head>
+
+<body>
+    <%- include('./partials/nav') %>
+    <h1>Edit <%= singleFood.name %></h1>
+        <form action="/foods/<%= singleFood._id %>?_method=PUT" method="POST">
+            <label for="name">Name</label>
+            <input type="text" name="name" id="name" value="<%= singleFood.name %>">
+            <label for="type">Type</label>
+            <input type="text" name="type" id="type" value="<%= singleFood.type %>">
+            <button type="submit">Submit</button>
+        </form>
+</body>
+
+</html>
