@@ -1,12 +1,12 @@
 <nav>
-    <a href="/">Home</a>
-    <a href="/foods">Foods</a>
-    <a href="/new-food">New food</a>
-
-
-    <a href="/auth/sign-out">Sign-out</a>
-    <a href="/auth/sign-up">Sign-up</a>
-    <a href="/auth/sign-in">Sign-in</a>
-
+  <a href="/">Home</a>
+  <a href="/foods">Foods</a>
+  <a href="/new-food">New food</a>
+  <% if (user) { %>
+    <p>You're signed in. <a href="/auth/sign-out">Sign out</a></p>
+    <% } else { %>
+      <a href="/auth/sign-up">Sign up</a>
+      <a href="/auth/sign-in">Sign in</a>
+      <% } %>
 
 </nav>
