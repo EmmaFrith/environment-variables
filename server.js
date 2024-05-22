@@ -48,47 +48,69 @@ app.use(function (req, res, next) {
   next();
 });
 
-
-app.get('/', (req, res) => {
-  res.render('home.ejs', {
-    user: req.session.user,
-  });
-});
-
 app.use("/auth", authController);
 
 
+app.get('/', (req, res) => {
+  try {
+    res.render('home.ejs', {
+      user: req.session.user,
+    });
+  } catch (error) {
+    res.render('error.ejs', { error: error.message })
+  }
+});
+
 
 app.get('/foods', async (req, res) => {
-  const foods = await Food.find()
-  res.render('foods.ejs', {
-    foods,
-  })
-})
+  try {
+    const foods = await Food.find()
+    res.render('foods.ejs', {
+      foods,
+    });
+  } catch (error) {
+    res.render('error.ejs', { error: error.message })
+  }
+});
+
 
 app.get('/new-food', (req, res) => {
   res.render('new.ejs')
-})
-
+});
 
 app.post('/foods', async (req, res) => {
-  const newFood = await Food.create(req.body)
-  res.redirect('/foods')
-})
-
+  if (req.session.user) {
+    try {
+      const newFood = await Food.create(req.body);
+      res.redirect('/foods');
+    } catch (error) {
+      res.render('error.ejs', { error: error.message });
+    }
+  } else {
+    res.redirect('auth/sign-in')
+  }
+});
 
 app.get('/foods/:foodId', async (req, res) => {
-  const singleFood = await Food.findById(req.params.foodId)
-  res.render('show.ejs', {
-    singleFood
-  })
-})
+  try {
+    const singleFood = await Food.findById(req.params.foodId)
+    res.render('show.ejs', {
+      singleFood
+    });
+  } catch (error) {
+    res.render('error.ejs', { error: error.message })
+  }
+});
 
 app.get('/foods/:foodId/edit', async (req, res) => {
-  const singleFood = await Food.findById(req.params.foodId)
-  res.render('edit.ejs', {
-    singleFood
-  })
+  try {
+    const singleFood = await Food.findById(req.params.foodId)
+    res.render('edit.ejs', {
+      singleFood
+    });
+  } catch (error) {
+    res.render('error,ejs', { error: error.message })
+  }
 })
 
 app.delete('/foods/:foodId', async (req, res) => {
