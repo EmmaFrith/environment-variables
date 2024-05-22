@@ -1,18 +1,42 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><%= singleFood.name %></title>
+    <title>
+        <%= singleFood.name %>
+    </title>
 </head>
+
 <body>
     <%- include('./partials/nav') %>
-    <h1><%= singleFood.name %></h1>
-    <p>Food type: <%= singleFood.type %></p>
 
-    <form action="/foods/<%= singleFood._id %>?_method=DELETE" method="POST">
-        <button type="submit">Delete</button>
-    </form>
-    <a href="/foods/<%= singleFood._id %>/edit">Edit</a>
+        <h1>
+            <%= singleFood.name %>
+        </h1>
+        <p>Food type: <%= singleFood.type %>
+        </p>
+
+        <form action="/foods/<%= singleFood._id %>?_method=DELETE" method="POST">
+            <button type="submit">Delete</button>
+        </form>
+        <a href="/foods/<%= singleFood._id %>/edit">Edit</a>
+
+        <a href="/foods/<%= singleFood._id %>/reviews">Add review</a>
+
+
+        <ul>
+            <% singleFood.reviews.forEach(review=> { %>
+                <li>
+                    <p>
+                        <%= review.text %>
+                    </p>
+                </li>
+                <% }) %>
+        </ul>
+
+
 </body>
+
 </html>

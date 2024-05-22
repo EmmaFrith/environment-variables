@@ -56,6 +56,7 @@ router.post("/sign-in", async (req, res) => {
 
     req.session.user = {
         username: userInDatabase.username,
+        userId: userInDatabase._id,
       };
 
     res.redirect("/");

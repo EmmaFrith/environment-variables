@@ -51,6 +51,16 @@ app.use(function (req, res, next) {
 app.use("/auth", authController);
 
 
+app.use((req, res, next) => {
+  if (req.session.message) {
+    res.locals.message = req.session.message;
+    req.session.message = null;
+  }
+  next();
+});
+
+
+
 app.get('/', (req, res) => {
   try {
     res.render('home.ejs', {
@@ -81,9 +91,14 @@ app.get('/new-food', (req, res) => {
 app.post('/foods', async (req, res) => {
   if (req.session.user) {
     try {
+      req.body.createdBy = req.session.user.userId;
+      // throw new Error ('I forced this error')
       const newFood = await Food.create(req.body);
+      req.session.message = "Food successfully created.";
       res.redirect('/foods');
     } catch (error) {
+      req.session.message = error.message;
+      res.redirect('/foods')
       res.render('error.ejs', { error: error.message });
     }
   } else {
@@ -94,6 +109,7 @@ app.post('/foods', async (req, res) => {
 app.get('/foods/:foodId', async (req, res) => {
   try {
     const singleFood = await Food.findById(req.params.foodId)
+
     res.render('show.ejs', {
       singleFood
     });
@@ -109,19 +125,51 @@ app.get('/foods/:foodId/edit', async (req, res) => {
       singleFood
     });
   } catch (error) {
-    res.render('error,ejs', { error: error.message })
+    res.render('error.ejs', { error: error.message })
   }
 })
 
+
+app.get('/foods/:foodId/reviews', (req, res) => {
+  res.render('newReview.ejs', { foodId: req.params.foodId })
+})
+
+
+
 app.delete('/foods/:foodId', async (req, res) => {
-  await Food.findByIdAndDelete(req.params.foodId)
-  res.redirect('/foods')
+  try {
+    await Food.findByIdAndDelete(req.params.foodId)
+    res.redirect('/foods')
+  } catch (error) {
+    res.render('error.ejs', { error: error.message })
+  }
 })
 
 app.put('/foods/:foodId', async (req, res) => {
-  const updateFood = await Food.findByIdAndUpdate(req.params.foodId, req.body, { new: true })
-  res.redirect('/foods')
+  try {
+    const updateFood = await Food.findByIdAndUpdate(req.params.foodId, req.body, { new: true })
+    res.redirect('/foods')
+  } catch (error) {
+    res.render('error.ejs', { error: error.message })
+  }
 })
+
+
+app.post('/foods/:foodId/reviews', async (req, res) => {
+  console.log(req.body)
+  if(req.session.user) {
+    const foodId = req.params.foodId
+    const foodFromDB = await Food.findById(foodId)
+    req.body.reviewer = req.session.user.userId
+    foodFromDB.reviews.push(req.body)
+    await foodFromDB.save()
+    res.redirect(`/foods/${foodId}`)
+  } else {
+    res.redirect('/auth/sign-in')
+  }
+
+})
+
 
 
 app.listen(port, () => {
